@@ -1,0 +1,34 @@
+ @State private var countdownTimer: AnyCancellable?
+    @State private var countdownDuration: TimeInterval = 120
+    @State private var isCountdownRunning = true
+    var formattedTime: String {
+        let minutes = Int(countdownDuration) / 60
+        let seconds = Int(countdownDuration) % 60
+        return String(format: "%02d:%02d", minutes, seconds)
+    } private func startCountdown() {
+        countdownTimer?.cancel()
+        countdownDuration = 120
+        isCountdownRunning = true
+        countdownTimer = Timer.publish(every: 1, on: .main, in: .common)
+            .autoconnect()
+            .sink { _ in
+                if countdownDuration > 0 {
+                    countdownDuration -= 1
+                } else {
+                    isCountdownRunning = false
+                    countdownTimer?.cancel()
+                }
+            }
+    } CappButton(
+                                icon: nil,
+                                title: String.text(.resendOtp)+"  \(formattedTime)  " ,
+                                buttonStyle: buttonType.secondary,
+                                width: .matchParent,
+                                action: {
+                                    if !isCountdownRunning {
+                                        resendSms()
+                                        
+                                    }
+                                }
+                                
+                            )
